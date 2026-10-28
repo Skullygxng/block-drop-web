@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#0e1224">
+<title>Block Drop</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- ===== Decoy game (default screen) ===== -->
+  <div id="gameScreen" class="screen game">
+    <header class="game-header">
+      <h1 id="gameTitle" class="title">BLOCK DROP</h1>
+    </header>
+
+    <div class="stats">
+      <div class="stat">
+        <span class="stat-label">Score</span>
+        <span id="scoreVal" class="stat-value score">0</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Best</span>
+        <span id="bestVal" class="stat-value best">0</span>
+      </div>
+      <div id="lives" class="lives" aria-label="Lives">
+        <span class="life"></span>
+        <span class="life"></span>
+        <span class="life"></span>
+      </div>
+    </div>
+
+    <div id="barTrack" class="bar-track" hidden>
+      <div id="barFill" class="bar-fill"></div>
+    </div>
+
+    <div class="board">
+      <div id="grid" class="grid" aria-hidden="true"></div>
+
+      <div id="startCard" class="card">
+        <p class="card-text">Tap the glowing block before time runs out!</p>
+        <button id="playBtn" class="btn" type="button">Play</button>
+      </div>
+
+      <div id="overCard" class="card" hidden>
+        <p class="card-title">Game Over</p>
+        <p id="overStats" class="card-text">Score 0 · Best 0</p>
+        <button id="againBtn" class="btn" type="button">Play Again</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Secret code pad ===== -->
+  <div id="padOverlay" class="overlay" hidden>
+    <div class="pad">
+      <svg class="pad-lock" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 2a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7a5 5 0 0 0-5-5zm-3 5a3 3 0 0 1 6 0v3H9V7z"/>
+      </svg>
+      <p id="padHint" class="pad-hint">Enter access code</p>
+      <div id="dots" class="dots">
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+      </div>
+      <div class="keypad" id="keypad">
+        <button class="key" type="button" data-k="1">1</button>
+        <button class="key" type="button" data-k="2">2</button>
+        <button class="key" type="button" data-k="3">3</button>
+        <button class="key" type="button" data-k="4">4</button>
+        <button class="key" type="button" data-k="5">5</button>
+        <button class="key" type="button" data-k="6">6</button>
+        <button class="key" type="button" data-k="7">7</button>
+        <button class="key" type="button" data-k="8">8</button>
+        <button class="key" type="button" data-k="9">9</button>
+        <span class="key blank" aria-hidden="true"></span>
+        <button class="key" type="button" data-k="0">0</button>
+        <button class="key back" type="button" data-k="back" aria-label="Delete">&#9003;</button>
+      </div>
+      <button id="padCancel" class="link" type="button">Cancel</button>
+    </div>
+  </div>
+
+  <!-- ===== Vault (unlocked only) ===== -->
+  <div id="vaultScreen" class="screen vault" hidden>
+    <div class="toolbar">
+      <button id="lockBtn" class="icon-btn" type="button" aria-label="Lock">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 2a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7a5 5 0 0 0-5-5zm-3 5a3 3 0 0 1 6 0v3H9V7z"/>
+        </svg>
+      </button>
+      <div class="toolbar-spacer"></div>
+      <button id="menuBtn" class="icon-btn" type="button" aria-label="Menu">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/>
+        </svg>
+      </button>
+      <div id="menu" class="menu" hidden>
+        <button id="menuChangeCode" class="menu-item" type="button">Change access code</button>
+        <button id="menuDeleteAll" class="menu-item danger" type="button">Delete all</button>
+      </div>
+    </div>
+
+    <div class="thumb-wrap">
+      <div id="thumbGrid" class="thumb-grid"></div>
+      <div id="emptyState" class="empty" hidden>
+        <svg class="empty-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 5h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2zm0 2v7.2l3.5-3 3 2.6 4-4.4 5.5 5V7H4zm3.5 2a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3z"/>
+        </svg>
+        <p class="empty-title">Nothing here yet</p>
+        <p class="empty-sub">Tap + to move photos and videos into your vault.</p>
+      </div>
+    </div>
+
+    <button id="plusBtn" class="fab" type="button" aria-label="Add photos or videos">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6V5z"/>
+      </svg>
+    </button>
+
+    <div id="importing" class="pill" hidden>Importing&#8230;</div>
+  </div>
+
+  <!-- ===== Full-screen media viewer ===== -->
+  <div id="viewer" class="viewer" hidden>
+    <div class="viewer-bar">
+      <button id="viewerClose" class="icon-btn" type="button" aria-label="Close">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M6.4 5 12 10.6 17.6 5 19 6.4 13.4 12 19 17.6 17.6 19 12 13.4 6.4 19 5 17.6 10.6 12 5 6.4 6.4 5z"/>
+        </svg>
+      </button>
+      <div class="toolbar-spacer"></div>
+      <button id="viewerDelete" class="icon-btn" type="button" aria-label="Delete">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M9 3h6l1 2h4v2H4V5h4l1-2zM6 8h12l-1 12a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L6 8zm4 3v7h1.5v-7H10zm2.5 0v7H14v-7h-1.5z"/>
+        </svg>
+      </button>
+    </div>
+    <img id="viewerImg" alt="">
+    <video id="viewerVideo" controls playsinline></video>
+  </div>
+
+  <input id="fileInput" type="file" accept="image/*,video/*" multiple hidden>
+
+  <script src="app.js"></script>
+</body>
+</html>
